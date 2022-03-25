@@ -1,0 +1,57 @@
+input[type="text"] {
+    height: 40px !important;
+    padding-left: 1.125rem;
+    border: 1px #eee solid;
+}
+
+.map-wrapper {
+    height: 400px;
+}
+
+.destination-card {
+    width: 200px;
+    height: 95%;
+    background-color: lightgrey;
+    display: inline-block;
+    vertical-align: top;
+
+    &:hover {
+        cursor: pointer;
+    }
+
+    .title {
+        overflow-wrap: break-word;
+        white-space: normal;
+    }
+
+    .description {
+        overflow-wrap: break-word;
+        white-space: normal;
+        height: 48px;
+    }
+}
+
+.destination-card-wrapper {
+    overflow: auto;
+    white-space: nowrap;
+    height: fit-content;
+
+    &::-webkit-scrollbar {
+        width: 10px;
+    }
+
+    &::-webkit-scrollbar-thumb {
+        background-color: #cecece;
+        border-radius: 10px;
+    }
+}
+
+.destination-cards-section {
+    max-width: 100%;
+}
+
+.image-preview {
+    width: 100%;
+    height: 200px;
+    background-color: lightgrey;
+}
