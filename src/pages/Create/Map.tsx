@@ -1,20 +1,21 @@
 import { Combobox, ComboboxInput, ComboboxOption, ComboboxPopover } from "@reach/combobox";
 import { GoogleMap, Marker, useLoadScript } from "@react-google-maps/api"
 import React, { useCallback, useRef } from "react";
-import { useEffect } from "react";
 import usePlacesAutocomplete, { getGeocode, getLatLng } from "use-places-autocomplete";
 import env from "../../config/config"
-import { destination } from "./Create";
 import './Map.scss';
 
 import '@reach/combobox/styles.css'
+import { destination } from "../../app.definition";
 
 const libraries: ("drawing" | "geometry" | "localContext" | "places" | "visualization")[] = ["places"];
+
+// USE THIS ONLY FOR CREATE PAGE. 
 
 
 const mapContainerStyle = {
     width: "100%",
-    height: "100%"
+    height: "80%"
 }
 
 const center = {
@@ -22,7 +23,7 @@ const center = {
     lng: 121.1245
 }
 
-export const Map = ({ mapClick, destinations, ...props }: { mapClick: any, destinations: destination[] }) => {
+export const Map = ({ mapClick, destinations, searchInMap,...props }: { mapClick: any, destinations: destination[], searchInMap: boolean }) => {
 
     const { useState } = React;
 
@@ -51,34 +52,38 @@ export const Map = ({ mapClick, destinations, ...props }: { mapClick: any, desti
         mapClick(e.latLng?.lat(), e.latLng?.lng());
     }
 
+    //TODO: Implement this
     const markerClick = (es: google.maps.MapMouseEvent) => {
         console.log(destinations);
         const destination = destinations.filter(el => el.lng == es.latLng?.lng() && el.lat == es.latLng?.lat())[0];
     }
 
     return (
-        <div style={mapContainerStyle}>
-            <Search panTo={panTo} />
-            <GoogleMap mapContainerStyle={mapContainerStyle}
-                zoom={8}
-                center={center}
-                onClick={click}
-                onLoad={onMapLoad}
-            >
-                {destinations.map((e, index) => {
-                    return (
-                        <Marker key={index}
-                            position={{ lat: e.lat as number, lng: e.lng as number }} onClick={markerClick} />
-                    )
-                })}
+        <div style={{height: '100%', width: '100%'}}>
+            <Search inMap={searchInMap} panTo={panTo}></Search>
+             
+            <div style={{width: '100%', height: '70%'}}>
+                <GoogleMap mapContainerStyle={mapContainerStyle}
+                    zoom={8}
+                    center={center}
+                    onClick={click}
+                    onLoad={onMapLoad}
+                >
+                    {destinations.map((e, index) => {
+                        return (
+                            <Marker key={index}
+                                position={{ lat: e.lat as number, lng: e.lng as number }} onClick={markerClick} />
+                        )
+                    })}
 
-            </GoogleMap>
+                </GoogleMap>
+            </div>
         </div>
 
     )
 }
 
-const Search = ({panTo, ...props}: {panTo: any}) => {
+const Search = ({panTo, inMap, ...props}: {panTo: any, inMap: boolean}) => {
     const {ready, value, suggestions: {status, data}, setValue, clearSuggestions} = usePlacesAutocomplete({});
 
     const handleLocationClick = async (place: any) => {
@@ -92,7 +97,7 @@ const Search = ({panTo, ...props}: {panTo: any}) => {
     }
 
     return (
-        <div className="search">
+        <div className={inMap ? 'search' : 'search-outside'}>
                <Combobox
                 onSelect={handleLocationClick}>
                     <ComboboxInput 
@@ -114,9 +119,5 @@ const Search = ({panTo, ...props}: {panTo: any}) => {
                     </ComboboxPopover>
                 </Combobox>
         </div>
-    )
-        
-
-    
- 
+    ) 
 }

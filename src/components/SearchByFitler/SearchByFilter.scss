@@ -1,0 +1,19 @@
+.map-section {
+    height: 200px;
+    width: 100%;
+}
+
+.filters-card {
+    height: auto;
+    width: 100%;
+    background-color: lightgrey;
+}
+
+.special-filters-wrapper {
+    height: 100%;
+    width: 100%;
+
+    input[type='range'] {
+        width: 100%;
+    }
+}

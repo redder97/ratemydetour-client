@@ -2,13 +2,12 @@ import React, { createRef, useCallback, useEffect, useRef, useState } from 'reac
 import { useContext } from 'react';
 import { Form, Button, Modal } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
-import { GenericResponse } from '../../app.definition';
+import { destination, GenericResponse } from '../../app.definition';
 import { LoggedInRmdNavBar } from '../../components/LoggedInRmdNavBar/LoggedInRmdNavBar';
 import env from '../../config/config';
 import './Create.scss';
 import { Map } from './Map';
 
-export interface destination { name?: string, description?: string, lat?: number, lng?: number, order?: number, file?: File};
 
 export default () => {
 
@@ -89,13 +88,26 @@ export default () => {
             basicCreateDetails: basicCreateDetails,
         }
 
+        const fd = new FormData();
+
+        fd.append('detour', JSON.stringify(detour));
+
+        destinations.map((d) => {
+            if (d.file) {
+                const fileType = d.file.type;
+                const orderedFile = new File([d.file], `order_${d.order}.${d.file.type.split('/')[1]}`, {type: fileType});
+                fd.append('files', orderedFile);
+            }
+        })
+
+        console.log(fd);
+     
         fetch(`${env.api}/api/v1/secured/create`, {
             method: 'post',
-            body: JSON.stringify({detour: detour}),
+            body: fd,
             headers: {
                 'authorization': `Bearer ${localStorage.getItem('token')}`,
-                'Content-type': 'application/json'
-            }
+            },
         }).then((res) => {
             console.log(res);
         })
@@ -176,7 +188,7 @@ const AddDestinations = ({ onConfirmAdd, destinations, ...props }: { onConfirmAd
     return (
         <div className="container">
             <div className='map-wrapper'>
-                <Map mapClick={handleMapClick} destinations={destinationSet}
+                <Map searchInMap={true} mapClick={handleMapClick} destinations={destinationSet}
                     ></Map>
 
                 <AddDestinationModal show={addingDestination} onAdd={onAdd} onHide={hideModal} currentDestination={currentDestination} />
